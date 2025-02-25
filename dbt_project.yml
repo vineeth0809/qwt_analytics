@@ -26,7 +26,7 @@ clean-targets:         # directories to be removed by `dbt clean`
 
 vars:
   v_city: "Stockholm"
-
+  "dbt_date:time_zone": "America/Los_Angeles"
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 
@@ -38,4 +38,9 @@ vars:
 # using the `{{ config(...) }}` macro.
 
 models:
-  +materialized: view
+  dq_tools:
+    +schema: "{{env_var('DBT_AUDITSCHEMA', 'AUDITING_DEV')}}"
+  pre-hook:
+    - "insert into {{env_var('DBT_QWTDB', 'QWT_ANALYTICS_DEV')}}.{{env_var('DBT_AUDITSCHEMA', 'AUDITING_DEV')}}.audit_qwt_models(modelname, starttime, endtime, duration) values ('{{this}}', current_timestamp, null, null);"
+  post-hook:
+    - "update {{env_var('DBT_QWTDB', 'QWT_ANALYTICS_DEV')}}.{{env_var('DBT_AUDITSCHEMA', 'AUDITING_DEV')}}.audit_qwt_models set endtime = current_timestamp , duration = datediff('second', starttime, current_timestamp) where modelname = '{{this}}'; "

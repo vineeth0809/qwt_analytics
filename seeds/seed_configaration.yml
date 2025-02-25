@@ -3,8 +3,11 @@ version: 2
 seeds:
   - name: lkp_divisions
     config:
-      schema: LOOKUP_DEV
+      schema: "{{env_var('LOOKUPSCHEMA', 'LOOKUP_DEV')}}"
 
   - name: lkp_catagory
     config:
-      schema: LOOKUP_DEV
+      schema: "{{env_var('LOOKUPSCHEMA', 'LOOKUP_DEV')}}"
+  - name: lkp_shippers
+    config:
+      schema: "{{env_var('LOOKUPSCHEMA', 'LOOKUP_DEV')}}"
